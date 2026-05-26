@@ -1,7 +1,9 @@
 package org.rogeriodesaf.usuario.exception;
 
-public class UsuarioNaoEncontradoException extends RuntimeException {
-  public UsuarioNaoEncontradoException(String message) {
-    super(message);
-  }
+import org.rogeriodesaf.shared.exception.BusinessException;
+
+public class UsuarioNaoEncontradoException extends BusinessException {
+    public UsuarioNaoEncontradoException(String message) {
+        super(message);
+    }
 }

@@ -1,4 +1,11 @@
-package org.rogeriodesaf.dto.usuario.response;
+package org.rogeriodesaf.usuario.dto;
 
-public class UsuarioResponseDTO {
+import org.rogeriodesaf.usuario.enums.Perfil;
+
+public record UsuarioResponseDTO (
+        Long id,
+        String nome,
+        String email,
+        Perfil perfil
+){
 }

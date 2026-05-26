@@ -1,4 +1,16 @@
 package org.rogeriodesaf.aula.dto;
 
-public class AulaResponseDTO {
+import jakarta.persistence.criteria.CriteriaBuilder;
+
+public record AulaResponseDTO (
+        Long id,
+        String titulo,
+        String descricao,
+        String urlVideo,
+        Integer ordem,
+        Integer duracaoMinutos,
+        Boolean ativa,
+        Long cursoId,
+        String nomeCurso
+) {
 }

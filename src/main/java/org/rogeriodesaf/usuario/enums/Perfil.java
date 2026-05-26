@@ -1,4 +1,7 @@
-package org.rogeriodesaf.enums;
+package org.rogeriodesaf.usuario.enums;
 
 public enum Perfil {
+
+    ADMIN,
+    USER
 }

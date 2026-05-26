@@ -1,4 +1,7 @@
 package org.rogeriodesaf.usuario.dto;
 
-public record LoginRequestDTO() {
+public record LoginRequestDTO(
+        String email,
+        String senha
+) {
 }

@@ -1,7 +1,10 @@
 package org.rogeriodesaf.aula.exception;
 
-public class AulaJaExisteException extends RuntimeException {
-  public AulaJaExisteException(String message) {
-    super(message);
-  }
+import org.rogeriodesaf.shared.exception.BusinessException;
+
+
+public class AulaJaExisteException extends BusinessException {
+    public AulaJaExisteException(String message) {
+        super(message);
+    }
 }

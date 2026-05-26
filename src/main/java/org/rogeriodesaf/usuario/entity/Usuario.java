@@ -1,8 +1,11 @@
-package org.rogeriodesaf.usuario;
+package org.rogeriodesaf.usuario.entity;
 
 import io.quarkus.hibernate.orm.panache.PanacheEntity;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.Table;
+import org.rogeriodesaf.usuario.enums.Perfil;
 
 @Entity
 @Table(name = "usuarios")
@@ -14,5 +17,7 @@ public class Usuario extends PanacheEntity {
 
     public String senha;
 
-    public String role;
+    @Enumerated(EnumType.STRING)
+    public Perfil perfil;
 }
+

@@ -1,7 +1,9 @@
 package org.rogeriodesaf.curso.exception;
 
-public class CursoNaoEncontradoException extends RuntimeException {
-  public CursoNaoEncontradoException(String message) {
-    super(message);
-  }
+import org.rogeriodesaf.shared.exception.BusinessException;
+
+public class CursoNaoEncontradoException extends BusinessException {
+    public CursoNaoEncontradoException(String message) {
+        super(message);
+    }
 }

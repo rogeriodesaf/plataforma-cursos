@@ -1,7 +1,9 @@
 package org.rogeriodesaf.usuario.exception;
 
-public class EmailJaCadastradoException extends RuntimeException {
-  public EmailJaCadastradoException(String message) {
-    super(message);
-  }
+import org.rogeriodesaf.shared.exception.BusinessException;
+
+public class EmailJaCadastradoException extends BusinessException {
+    public EmailJaCadastradoException(String message) {
+        super(message);
+    }
 }

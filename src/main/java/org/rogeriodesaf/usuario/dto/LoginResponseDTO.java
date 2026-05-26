@@ -1,4 +1,6 @@
 package org.rogeriodesaf.usuario.dto;
 
-public record LoginResponseDto() {
+public record LoginResponseDTO(
+        String token
+) {
 }
