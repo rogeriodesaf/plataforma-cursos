@@ -21,7 +21,7 @@ public class ProgressoResource
 
     @POST
     @Path("/aulas/{aulaId}/concluir")
-    @RolesAllowed("ADMIN")
+    @RolesAllowed("USER")
     public Response concluirAula(@PathParam("aulaId") Long aulaId) {{
         progressoService.concluirAula(aulaId);
     }
@@ -30,7 +30,7 @@ public class ProgressoResource
 
     @GET
     @Path("/cursos/{cursoId}")
-    @RolesAllowed("ADMIN")
+    @RolesAllowed("USER")
     public Response obterProgresso(@PathParam("cursoId") Long cursoId) {
 
         ProgressoResponseDTO response = progressoService.consultarProgresso(cursoId);

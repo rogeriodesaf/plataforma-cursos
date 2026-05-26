@@ -43,4 +43,11 @@ public class AulaResource {
         List<AulaResponseDTO> response = aulaService.listarAulas(id);
         return  Response.ok(response).build();
     }
+
+    @GET
+    @Path("/teste-admin")
+    @RolesAllowed("ADMIN")
+    public Response testeAdmin() {
+        return Response.ok("Acesso permitido para ADMIN").build();
+    }
 }

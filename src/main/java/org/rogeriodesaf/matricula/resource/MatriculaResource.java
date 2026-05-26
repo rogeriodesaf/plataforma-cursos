@@ -25,7 +25,7 @@ public class MatriculaResource {
 
     @POST
     @Path("/cursos/{cursoId}")
-    @RolesAllowed("ADMIN")
+    @RolesAllowed("USER")
     public Response matricular(@PathParam("cursoId") Long cursoId) {
         MatriculaResponseDTO response = matriculaService.matricularUsuarioEmCurso(cursoId);
         URI uri = URI.create("/matriculas/" + response.id());
@@ -36,7 +36,7 @@ public class MatriculaResource {
 
     @GET
     @Path("/minhas")
-    @RolesAllowed("ADMIN")
+    @RolesAllowed("USER")
     public Response listarMinhasMatriculas() {
         List<MatriculaResponseDTO> response = matriculaService.listarMinhasMatriculas();
         return Response.ok(response).build();
@@ -52,7 +52,7 @@ public class MatriculaResource {
     }
 
     @GET
-    @Path("/usuarios/{usuarioId/cursos")
+    @Path("/usuarios/{usuarioId}/cursos")
     @RolesAllowed("ADMIN")
     public Response listarCursosPorUsuario(@PathParam("usuarioId") Long usuarioId){
         List<MatriculaResponseDTO> response = matriculaService.listarCursosPorUsuario(usuarioId);

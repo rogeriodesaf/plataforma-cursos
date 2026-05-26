@@ -38,7 +38,7 @@ public class UsuarioService {
         }
 
         usuario = usuarioMapper.toEntity(usuarioRequestDTO);
-        usuario.perfil = Perfil.ADMIN;
+        usuario.perfil = Perfil.USER;
         usuario.senha = BcryptUtil.bcryptHash(usuarioRequestDTO.senha());
 
         usuarioRepository.persist(usuario);
@@ -60,5 +60,16 @@ public class UsuarioService {
 
         return new LoginResponseDTO(token);
 
+    }
+
+    @Transactional
+    public UsuarioResponseDTO cadastrar(UsuarioRequestDTO usuarioRequestDTO,Perfil perfil){
+        Usuario usuario = usuarioMapper.toEntity(usuarioRequestDTO);
+        usuario.perfil = perfil;
+        usuario.senha = BcryptUtil.bcryptHash(usuarioRequestDTO.senha());
+
+
+        usuarioRepository.persist(usuario);
+        return usuarioMapper.toResponse(usuario);
     }
 }

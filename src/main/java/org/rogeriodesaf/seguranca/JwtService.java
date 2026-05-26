@@ -12,6 +12,7 @@ import java.util.Set;
 public class JwtService {
 
   public String gerarToken(Usuario usuario){
+      System.out.println("Gerando token para usuário: " + usuario.perfil);
       return Jwt.issuer("plataforma-cursos")
               .subject(usuario.email)
               .groups(Set.of(usuario.perfil.name()))

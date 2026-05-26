@@ -8,8 +8,11 @@ import org.rogeriodesaf.aula.exception.AulaJaConcluidaException;
 import org.rogeriodesaf.aula.exception.AulaNaoEncontradaException;
 import org.rogeriodesaf.aula.repository.AulaRepository;
 import org.rogeriodesaf.aula.service.AulaService;
+import org.rogeriodesaf.matricula.entity.Matricula;
+import org.rogeriodesaf.matricula.repository.MatriculaRepository;
 import org.rogeriodesaf.progresso.dto.ProgressoResponseDTO;
 import org.rogeriodesaf.progresso.entity.Progresso;
+import org.rogeriodesaf.progresso.exception.AlunoNaoMatriculadoException;
 import org.rogeriodesaf.progresso.repository.ProgressoRepository;
 import org.rogeriodesaf.usuario.entity.Usuario;
 import org.rogeriodesaf.usuario.exception.UsuarioNaoEncontradoException;
@@ -22,12 +25,14 @@ public class ProgressoService {
     private final UsuarioRepository usuarioRepository;
    private final JsonWebToken jsonWebToken;
     private final AulaRepository aulaRepository;
+    private final MatriculaRepository matriculaRepository;
 
-    public ProgressoService(ProgressoRepository progressoRepository, UsuarioRepository usuarioRepository, UsuarioRepository usuarioRepository1, JsonWebToken jsonWebToken, AulaRepository aulaRepository) {
+    public ProgressoService(ProgressoRepository progressoRepository, UsuarioRepository usuarioRepository, UsuarioRepository usuarioRepository1, JsonWebToken jsonWebToken, AulaRepository aulaRepository, MatriculaRepository matriculaRepository) {
         this.progressoRepository = progressoRepository;
         this.usuarioRepository = usuarioRepository1;
         this.jsonWebToken = jsonWebToken;
         this.aulaRepository = aulaRepository;
+        this.matriculaRepository = matriculaRepository;
     }
 
     @Transactional
@@ -45,6 +50,15 @@ public class ProgressoService {
         if (aula == null) {
             throw new AulaNaoEncontradaException("Aula não encontrada");
         }
+
+        Matricula matricula = matriculaRepository.buscarPorUsuarioECurso(
+                usuario.id,
+                aula.curso.id
+        );
+        if (matricula == null || !matricula.ativa) {
+            throw new AlunoNaoMatriculadoException("Aluno não matriculado neste curso");
+        }
+
 
         Progresso progressoExistente = progressoRepository.buscaPorUsuarioEAula(usuario.id, aulaId);
         if (progressoExistente != null){
