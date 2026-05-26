@@ -4,6 +4,7 @@ import jakarta.annotation.security.RolesAllowed;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+import org.rogeriodesaf.progresso.dto.ProgressoResponseDTO;
 import org.rogeriodesaf.progresso.service.ProgressoService;
 
 @Path("/progresso")
@@ -25,5 +26,14 @@ public class ProgressoResource
         progressoService.concluirAula(aulaId);
     }
         return Response.ok("Aula concluida com sucesso").build();
+    }
+
+    @GET
+    @Path("/cursos/{cursoId}")
+    @RolesAllowed("ADMIN")
+    public Response obterProgresso(@PathParam("cursoId") Long cursoId) {
+
+        ProgressoResponseDTO response = progressoService.consultarProgresso(cursoId);
+        return Response.ok(response).build();
     }
 }

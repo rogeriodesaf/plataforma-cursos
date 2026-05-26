@@ -73,7 +73,9 @@ public class ProgressoService {
         Long aulasConcluidas = progressoRepository.contarAulasConcluidasPorUsuarioECurso(usuario.id, cursoId);
         Long totalAulas = aulaRepository.contarAulasPorCurso(cursoId);
 
-        double percentualConclusao = totalAulas > 0 ? (aulasConcluidas.doubleValue() / totalAulas.doubleValue()) * 100 : 0;
+        double percentualConclusao = totalAulas > 0 ?
+                (aulasConcluidas.doubleValue() / totalAulas.doubleValue()) * 100
+                : 0;
 
         return new ProgressoResponseDTO(
                 cursoId,
