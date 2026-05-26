@@ -14,6 +14,7 @@ import org.rogeriodesaf.usuario.exception.UsuarioNaoEncontradoException;
 import org.rogeriodesaf.usuario.repository.UsuarioRepository;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @ApplicationScoped
 public class MatriculaService {
@@ -60,5 +61,42 @@ public class MatriculaService {
 
         matriculaRepository.persist(matricula);
         return matriculaMapper.toResponse(matricula);
+    }
+
+    public List<MatriculaResponseDTO> listarMinhasMatriculas() {
+        String email = jsonWebToken.getSubject();
+        var usuario = usuarioRepository.findByEmail(email);
+        if (usuario == null) {
+            throw new UsuarioNaoEncontradoException("Usuário não encontrado");
+        }
+
+        List<Matricula> matriculas = matriculaRepository.listarPorUsuario(usuario.id);
+
+        return matriculas.stream()
+                .map(matriculaMapper::toResponse)
+                .toList();
+    }
+
+    //método para listar os alunos matriculados em um curso específico, acessível apenas para administradores ou instrutores
+    public List<MatriculaResponseDTO> listarAlunosPorCurso(Long cursoId) {
+        var curso = cursoRepository.findById(cursoId);
+        if (curso == null) {
+            throw new CursoNaoEncontradoException("Curso não encontrado");
+        }
+
+        List<Matricula> matriculas = matriculaRepository.listarPorCurso(cursoId);
+
+        return matriculas.stream()
+                .map(matriculaMapper::toResponse)
+                .toList();
+    }
+
+    public List<MatriculaResponseDTO> listarCursosPorUsuario(Long usuarioId){
+        List<Matricula> matriculas =
+                matriculaRepository.listarPorUsuario(usuarioId);
+
+        return matriculas.stream()
+                .map(matriculaMapper::toResponse)
+                .toList();
     }
 }

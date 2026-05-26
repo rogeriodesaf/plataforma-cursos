@@ -4,10 +4,13 @@ import jakarta.annotation.security.RolesAllowed;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+import org.rogeriodesaf.curso.dto.CursoResponseDTO;
 import org.rogeriodesaf.matricula.dto.MatriculaResponseDTO;
+import org.rogeriodesaf.matricula.entity.Matricula;
 import org.rogeriodesaf.matricula.service.MatriculaService;
 
 import java.net.URI;
+import java.util.List;
 
 @Path("/matriculas")
 @Consumes(MediaType.APPLICATION_JSON)
@@ -29,5 +32,31 @@ public class MatriculaResource {
         return Response.created(uri)
                 .entity(response)
                 .build();
+    }
+
+    @GET
+    @Path("/minhas")
+    @RolesAllowed("ADMIN")
+    public Response listarMinhasMatriculas() {
+        List<MatriculaResponseDTO> response = matriculaService.listarMinhasMatriculas();
+        return Response.ok(response).build();
+    }
+
+    @GET
+    @Path("/cursos/{cursoId}/alunos")
+    @RolesAllowed("ADMIN")
+    public Response listarAlunosPorCurso(@PathParam("cursoId") Long cursoId){
+        List<MatriculaResponseDTO> response =
+                matriculaService.listarAlunosPorCurso(cursoId);
+        return Response.ok().build();
+    }
+
+    @GET
+    @Path("/usuarios/{usuarioId/cursos")
+    @RolesAllowed("ADMIN")
+    public Response listarCursosPorUsuario(@PathParam("usuarioId") Long usuarioId){
+        List<MatriculaResponseDTO> response = matriculaService.listarCursosPorUsuario(usuarioId);
+
+        return Response.ok(response).build();
     }
 }

@@ -85,4 +85,27 @@ public class ProgressoService {
         );
     }
 
+    public ProgressoResponseDTO consultarProgressoAluno(Long usuarioId, Long cursoId) {
+        Usuario usuario = usuarioRepository.findById(usuarioId);
+        if (usuario == null) {
+            throw new UsuarioNaoEncontradoException("Usuário não encontrado");
+        }
+
+        Long aulasConcluidas = progressoRepository.contarAulasConcluidasPorUsuarioECurso(usuario.id, cursoId);
+        Long totalAulas = aulaRepository.contarAulasPorCurso(cursoId);
+
+        double percentualConclusao = 0.0;
+               if (totalAulas > 0) {
+            percentualConclusao =
+                    (aulasConcluidas.doubleValue() / totalAulas.doubleValue()) * 100;
+        }
+
+        return new ProgressoResponseDTO(
+                cursoId,
+                totalAulas,
+                aulasConcluidas,
+                percentualConclusao
+        );
+    }
+
 }

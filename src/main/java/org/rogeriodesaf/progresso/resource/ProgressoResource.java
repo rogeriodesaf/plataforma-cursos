@@ -36,4 +36,14 @@ public class ProgressoResource
         ProgressoResponseDTO response = progressoService.consultarProgresso(cursoId);
         return Response.ok(response).build();
     }
+
+    @GET
+    @Path("/usuarios/{usuarioId}/cursos/{cursoId}")
+    @RolesAllowed("ADMIN")
+    public Response obterProgressoAluno(@PathParam("usuarioId") Long usuarioId,
+                                            @PathParam("cursoId") Long cursoId) {
+
+            ProgressoResponseDTO response = progressoService.consultarProgressoAluno(usuarioId, cursoId);
+            return Response.ok(response).build();
+        }
 }
