@@ -6,6 +6,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import org.rogeriodesaf.curso.entity.Curso;
+import org.rogeriodesaf.professor.entity.Professor;
 
 @Entity
 @Table(name = "aulas")
@@ -26,6 +27,9 @@ public class Aula extends PanacheEntity {
     @ManyToOne
     @JoinColumn(name = "curso_id")
     public Curso curso;
+
+    @ManyToOne
+    public Professor professor;
 
 
 }

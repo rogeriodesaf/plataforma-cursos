@@ -12,6 +12,9 @@ import org.rogeriodesaf.aula.repository.AulaRepository;
 import org.rogeriodesaf.curso.entity.Curso;
 import org.rogeriodesaf.curso.exception.CursoNaoEncontradoException;
 import org.rogeriodesaf.curso.repository.CursoRepository;
+import org.rogeriodesaf.professor.entity.Professor;
+import org.rogeriodesaf.professor.exception.ProfessorNaoEncontradoException;
+import org.rogeriodesaf.professor.repository.ProfessorRepository;
 
 import java.util.List;
 
@@ -21,11 +24,13 @@ public class AulaService {
     private final AulaMapper aulaMapper;
     private final AulaRepository aulaRepository;
     private final CursoRepository cursoRepository;
+    private final ProfessorRepository professorRepository;
 
-    public AulaService(AulaMapper aulaMapper, AulaRepository aulaRepository, CursoRepository cursoRepository) {
+    public AulaService(AulaMapper aulaMapper, AulaRepository aulaRepository, CursoRepository cursoRepository, ProfessorRepository professorRepository) {
         this.aulaMapper = aulaMapper;
         this.aulaRepository = aulaRepository;
         this.cursoRepository = cursoRepository;
+        this.professorRepository = professorRepository;
     }
 
     @Transactional
@@ -35,12 +40,18 @@ public class AulaService {
             throw new CursoNaoEncontradoException("Curso não encontrado");
         }
 
+        Professor professor = professorRepository.findById(aulaRequestDTO.professorId());
+        if (professor == null){
+            throw new ProfessorNaoEncontradoException("Professor não encontrado");
+        }
+
         Aula aula = aulaMapper.toEntity(aulaRequestDTO);
 
         Long quantidadeAulas = aulaRepository.count("curso.id", curso.id);
 
        aula.ordem =  quantidadeAulas.intValue() + 1;
        aula.curso = curso;
+       aula.professor = professor;
        aula.ativa = true;
 
         aulaRepository.persist(aula);

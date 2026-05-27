@@ -19,6 +19,8 @@ public record AulaRequestDTO (
         @NotNull(message = "A duração é obrigatória")
         Integer duracaoMinutos,
 
-        Long cursoId
+        Long cursoId,
+
+        Long professorId
 ) {
 }

@@ -11,6 +11,8 @@ public record AulaResponseDTO (
         Integer duracaoMinutos,
         Boolean ativa,
         Long cursoId,
-        String nomeCurso
+        String nomeCurso,
+        Long professorId,
+        String nomeProfessor
 ) {
 }

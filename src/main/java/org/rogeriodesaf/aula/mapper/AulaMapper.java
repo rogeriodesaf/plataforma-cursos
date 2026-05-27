@@ -29,7 +29,9 @@ public class AulaMapper {
                 aula.duracaoMinutos,
                 aula.ativa,
                 aula.curso.id,
-                aula.curso.titulo
+                aula.curso.titulo,
+                aula.professor.id,
+                aula.professor.nome
         );
     }
 
