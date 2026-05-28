@@ -50,4 +50,12 @@ public class AulaResource {
     public Response testeAdmin() {
         return Response.ok("Acesso permitido para ADMIN").build();
     }
+
+    @GET
+    @Path("/professor/{professorId}")
+    @RolesAllowed("ADMIN")
+    public Response listarAulasPorProfessor(@PathParam("professorId") Long professorId) {
+        List<AulaResponseDTO> response = aulaService.listarAulasPorProfessor(professorId);
+        return Response.ok(response).build();
+    }
 }

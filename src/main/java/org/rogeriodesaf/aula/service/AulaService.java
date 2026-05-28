@@ -65,4 +65,11 @@ public class AulaService {
                  .map(aulaMapper::toResponse)
                  .toList();
     }
+
+    public List<AulaResponseDTO> listarAulasPorProfessor ( Long professorId){
+        List<Aula> aulas = aulaRepository.listarProfessor(professorId);
+        return aulas.stream()
+                .map(aulaMapper::toResponse)
+                .toList();
+    }
 }

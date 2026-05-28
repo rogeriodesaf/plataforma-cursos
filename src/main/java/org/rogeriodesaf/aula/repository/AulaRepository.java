@@ -16,4 +16,7 @@ public class AulaRepository implements PanacheRepository <Aula>{
     public Long contarAulasPorCurso(Long cursoId){
         return count("curso.id", cursoId);
     }
+
+    public List<Aula> listarProfessor(Long professorId){return list("professor.id = ?1 and ativa = true", professorId);
+    }
 }
