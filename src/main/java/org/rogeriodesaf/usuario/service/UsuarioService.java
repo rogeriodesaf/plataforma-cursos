@@ -16,6 +16,8 @@ import org.rogeriodesaf.usuario.exception.UsuarioNaoEncontradoException;
 import org.rogeriodesaf.usuario.mapper.UsuarioMapper;
 import org.rogeriodesaf.usuario.repository.UsuarioRepository;
 
+import java.util.List;
+
 @ApplicationScoped
 public class UsuarioService {
 
@@ -70,6 +72,25 @@ public class UsuarioService {
 
 
         usuarioRepository.persist(usuario);
+        return usuarioMapper.toResponse(usuario);
+    }
+
+    public List<UsuarioResponseDTO> listarUsuarios() {
+        var usuarios = usuarioRepository.listAll();
+        if (usuarios.isEmpty()){
+            throw new UsuarioNaoEncontradoException("Nenhum usuário encontrado");
+        }
+        return usuarios.stream()
+                .map(usuarioMapper::toResponse)
+                .toList();
+    }
+
+
+    public UsuarioResponseDTO listarUsuarioPorId(Long id) {
+        var usuario = usuarioRepository.findById(id);
+        if (usuario == null){
+            throw new UsuarioNaoEncontradoException("Usuário não encontrado com o id: " + id);
+        }
         return usuarioMapper.toResponse(usuario);
     }
 }

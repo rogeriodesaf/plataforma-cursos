@@ -2,10 +2,7 @@ package org.rogeriodesaf.professor.resource;
 
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.validation.Valid;
-import jakarta.ws.rs.Consumes;
-import jakarta.ws.rs.POST;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import org.rogeriodesaf.professor.dto.ProfessorRequestDTO;
@@ -13,6 +10,7 @@ import org.rogeriodesaf.professor.dto.ProfessorResponseDTO;
 import org.rogeriodesaf.professor.service.ProfessorService;
 
 import java.net.URI;
+import java.util.List;
 
 @Path("/professores")
 @Consumes(MediaType.APPLICATION_JSON)
@@ -33,5 +31,20 @@ public class ProfessorResource {
         return Response.created(uri)
                 .entity(response)
                 .build();
+    }
+
+    @GET
+    @RolesAllowed({"ADMIN", "USER"})
+    public Response listarProfessores(){
+        List<ProfessorResponseDTO> response = professorService.listarProfessores();
+        return Response.ok(response).build();
+    }
+
+    @GET
+    @Path("/{id}")
+    @RolesAllowed({"ADMIN","USER"})
+    public Response listarProfessorPorId(@PathParam("id") Long id) {
+        ProfessorResponseDTO response = professorService.listarProfessorPorId(id);
+        return Response.ok(response).build();
     }
 }

@@ -10,6 +10,8 @@ import org.rogeriodesaf.professor.exception.ProfessorNaoEncontradoException;
 import org.rogeriodesaf.professor.mapper.ProfessorMapper;
 import org.rogeriodesaf.professor.repository.ProfessorRepository;
 
+import java.util.List;
+
 @ApplicationScoped
 public class ProfessorService {
 
@@ -32,6 +34,25 @@ public class ProfessorService {
         professor.ativo = true;
 
         professorRepository.persist(professor);
+        return professorMapper.toResponse(professor);
+    }
+
+    @Transactional
+    public List<ProfessorResponseDTO> listarProfessores() {
+        var professores = professorRepository.listAll();
+        if (professores.isEmpty()){
+            throw new ProfessorNaoEncontradoException("Nenhum professor encontrado");
+        }
+        return professores.stream()
+                .map(professorMapper::toResponse)
+                .toList();
+    }
+
+    public ProfessorResponseDTO listarProfessorPorId(Long id) {
+        var professor = professorRepository.findById(id);
+        if (professor == null){
+            throw new ProfessorNaoEncontradoException("Professor não encontrado com o id: " + id);
+        }
         return professorMapper.toResponse(professor);
     }
 }

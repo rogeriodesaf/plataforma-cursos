@@ -15,6 +15,7 @@ import org.rogeriodesaf.usuario.repository.UsuarioRepository;
 import org.rogeriodesaf.usuario.service.UsuarioService;
 
 import java.net.URI;
+import java.util.List;
 
 @Path("/auth")
 @Consumes(MediaType.APPLICATION_JSON)
@@ -60,5 +61,20 @@ public class UsuarioResource {
                 .build();
     }
 
+    @GET
+    @RolesAllowed("ADMIN")
+    public Response listarUsuarios(){
+        List<UsuarioResponseDTO> response = usuarioService.listarUsuarios();
 
+       return Response.ok(response).build();
+    }
+
+    @GET
+    @Path("/{id}")
+    @RolesAllowed("ADMIN")
+    public Response buscarUsuarioPorId(@PathParam("id") Long id) {
+        UsuarioResponseDTO response = usuarioService.listarUsuarioPorId(id);
+
+        return Response.ok(response).build();
+    }
 }

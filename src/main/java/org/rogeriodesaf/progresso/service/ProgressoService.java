@@ -6,6 +6,7 @@ import org.eclipse.microprofile.jwt.JsonWebToken;
 import org.rogeriodesaf.aula.entity.Aula;
 import org.rogeriodesaf.aula.exception.AulaJaConcluidaException;
 import org.rogeriodesaf.aula.exception.AulaNaoEncontradaException;
+import org.rogeriodesaf.aula.exception.AulasAnterioresNaoConcluidasException;
 import org.rogeriodesaf.aula.repository.AulaRepository;
 import org.rogeriodesaf.aula.service.AulaService;
 import org.rogeriodesaf.matricula.entity.Matricula;
@@ -65,6 +66,22 @@ public class ProgressoService {
            throw new AulaJaConcluidaException("Aula já concluída por este usuário");
         }
 
+        Long totalAulasAnteriores =
+                aulaRepository.contarAulasAnteriores(
+                        aula.curso.id,
+                        aula.ordem);
+
+        Long aulasAnterioresConcluidas = progressoRepository.contarAulasAnterioresConcluidas(
+                usuario.id,
+                aula.curso.id,
+                aula.ordem
+        );
+
+        if (!totalAulasAnteriores.equals(aulasAnterioresConcluidas)){
+            throw new AulasAnterioresNaoConcluidasException(
+                    "É necessário concluir as aulas anteriores para concluir esta aula"
+            );
+        }
         Progresso progresso = new Progresso();
         progresso.usuario = usuario;
         progresso.aula = aula;

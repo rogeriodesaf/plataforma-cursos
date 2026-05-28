@@ -58,4 +58,12 @@ public class AulaResource {
         List<AulaResponseDTO> response = aulaService.listarAulasPorProfessor(professorId);
         return Response.ok(response).build();
     }
+
+    @GET
+    @Path("/curso/{cursoId}")
+    @RolesAllowed("USER")
+    public Response listarAulasPorCurso(@PathParam("cursoId") Long cursoId) {
+        List<AulaResponseDTO> response = aulaService.listarAulas(cursoId);
+        return Response.ok(response).build();
+    }
 }

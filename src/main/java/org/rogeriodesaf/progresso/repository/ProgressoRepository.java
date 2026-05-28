@@ -17,4 +17,23 @@ public class ProgressoRepository implements PanacheRepository<Progresso> {
         return count(
                 "usuario.id = ?1 and curso.id = ?2", usuarioId, cursoId);
     }
+
+    public Long contarAulasConcluidasPorCurso(
+            Long usuarioId,
+            Long cursoId,
+            Integer ordemAtual) {
+        return count(
+                "usuario.id = ?1 and curso.id ?2 and aula.ordem < ?3",
+                usuarioId,
+                cursoId,
+                ordemAtual);
+    }
+
+    public Long contarAulasAnterioresConcluidas(Long usuarioId, Long cursoId, Integer ordemAtual) {
+        return count(
+                "usuario.id = ?1 and curso.id = ?2 and aula.ordem < ?3",
+                usuarioId,
+                cursoId,
+                ordemAtual);
+    }
 }
