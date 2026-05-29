@@ -6,7 +6,7 @@ COPY .mvn .mvn
 COPY src src
 COPY privateKey.pem publicKey.pem ./
 
-RUN ./mvnw package -DskipTests
+RUN chmod +x mvnw && ./mvnw package -DskipTests
 
 FROM eclipse-temurin:17-jre
 WORKDIR /app
