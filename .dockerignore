@@ -1,5 +1,8 @@
-*
-!target/*-runner
-!target/*-runner.jar
-!target/lib/*
-!target/quarkus-app/*
+.git
+.github
+.idea
+.vscode
+target
+node_modules
+quarkus-dev-check.err.log
+quarkus-dev-check.out.log
