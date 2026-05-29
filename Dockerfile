@@ -15,6 +15,8 @@ COPY --from=build /workspace/target/quarkus-app/lib/ /app/lib/
 COPY --from=build /workspace/target/quarkus-app/*.jar /app/
 COPY --from=build /workspace/target/quarkus-app/app/ /app/app/
 COPY --from=build /workspace/target/quarkus-app/quarkus/ /app/quarkus/
+COPY --from=build /workspace/publicKey.pem /app/publicKey.pem
+COPY --from=build /workspace/privateKey.pem /app/privateKey.pem
 
 ENV QUARKUS_HTTP_HOST=0.0.0.0
 ENV JAVA_OPTS="-Djava.util.logging.manager=org.jboss.logmanager.LogManager"
