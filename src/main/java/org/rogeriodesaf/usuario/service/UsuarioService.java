@@ -4,6 +4,7 @@ import io.quarkus.elytron.security.common.BcryptUtil;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.rogeriodesaf.seguranca.JwtService;
 import org.rogeriodesaf.usuario.dto.ForgotPasswordRequestDTO;
 import org.rogeriodesaf.usuario.dto.ForgotPasswordResponseDTO;
@@ -22,6 +23,7 @@ import org.rogeriodesaf.usuario.repository.UsuarioRepository;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @ApplicationScoped
@@ -30,12 +32,19 @@ public class UsuarioService {
     private final UsuarioMapper usuarioMapper;
     private final UsuarioRepository usuarioRepository;
     private final JwtService jwtService;
+    private final Optional<String> frontendBaseUrl;
 
     @Inject
-    public UsuarioService(UsuarioMapper usuarioMapper, UsuarioRepository usuarioRepository, JwtService jwtService) {
+    public UsuarioService(
+            UsuarioMapper usuarioMapper,
+            UsuarioRepository usuarioRepository,
+            JwtService jwtService,
+            @ConfigProperty(name = "app.frontend.base-url") Optional<String> frontendBaseUrl
+    ) {
         this.usuarioMapper = usuarioMapper;
         this.usuarioRepository = usuarioRepository;
         this.jwtService = jwtService;
+        this.frontendBaseUrl = frontendBaseUrl;
     }
 
     @Transactional
@@ -97,11 +106,11 @@ public class UsuarioService {
     }
 
     @Transactional
-    public ForgotPasswordResponseDTO solicitarRecuperacaoSenha(ForgotPasswordRequestDTO request, String baseUrl) {
+    public ForgotPasswordResponseDTO solicitarRecuperacaoSenha(ForgotPasswordRequestDTO request, String backendBaseUrl) {
         Usuario usuario = usuarioRepository.findByEmail(request.email());
         if (usuario == null) {
             return new ForgotPasswordResponseDTO(
-                    "Se o email estiver cadastrado, um link de redefinicao sera disponibilizado.",
+                    "Se o email estiver cadastrado, um link local de redefinicao sera disponibilizado.",
                     null,
                     null
             );
@@ -111,9 +120,10 @@ public class UsuarioService {
         usuario.tokenRecuperacaoSenha = token;
         usuario.tokenRecuperacaoExpiraEm = LocalDateTime.now().plusMinutes(30);
 
-        String link = baseUrl + "/redefinir-senha/" + token;
+        String frontendUrl = frontendBaseUrl.filter(value -> !value.isBlank()).orElse(backendBaseUrl);
+        String link = frontendUrl.replaceAll("/+$", "") + "/redefinir-senha/" + token;
         return new ForgotPasswordResponseDTO(
-                "Link de redefinicao gerado com sucesso. Em uma proxima etapa, ele podera ser enviado por email.",
+                "Link de redefinicao gerado com sucesso. Use o link abaixo para cadastrar uma nova senha.",
                 token,
                 link
         );
