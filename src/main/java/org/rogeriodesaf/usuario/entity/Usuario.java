@@ -7,6 +7,8 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.Table;
 import org.rogeriodesaf.usuario.enums.Perfil;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Table(name = "usuarios")
 public class Usuario extends PanacheEntity {
@@ -19,5 +21,9 @@ public class Usuario extends PanacheEntity {
 
     @Enumerated(EnumType.STRING)
     public Perfil perfil;
+
+    public String tokenRecuperacaoSenha;
+
+    public LocalDateTime tokenRecuperacaoExpiraEm;
 }
 
