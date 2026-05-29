@@ -6,8 +6,10 @@ import org.eclipse.microprofile.jwt.JsonWebToken;
 import org.rogeriodesaf.aula.repository.AulaRepository;
 import org.rogeriodesaf.certificado.dto.CertificadoResponseDTO;
 import org.rogeriodesaf.certificado.entity.Certificado;
+import org.rogeriodesaf.certificado.exception.CertificadoNaoEncontradoException;
 import org.rogeriodesaf.certificado.mapper.CertificadoMapper;
 import org.rogeriodesaf.certificado.repository.CertificadoRepository;
+import org.rogeriodesaf.certificado.util.CertificadoPdfGenerator;
 import org.rogeriodesaf.curso.entity.Curso;
 import org.rogeriodesaf.curso.exception.CursoNaoConcluidoException;
 import org.rogeriodesaf.curso.exception.CursoNaoEncontradoException;
@@ -15,10 +17,12 @@ import org.rogeriodesaf.curso.repository.CursoRepository;
 import org.rogeriodesaf.matricula.repository.MatriculaRepository;
 import org.rogeriodesaf.progresso.exception.AlunoNaoMatriculadoException;
 import org.rogeriodesaf.progresso.repository.ProgressoRepository;
+import org.rogeriodesaf.usuario.entity.Usuario;
 import org.rogeriodesaf.usuario.exception.UsuarioNaoEncontradoException;
 import org.rogeriodesaf.usuario.repository.UsuarioRepository;
 
-import javax.swing.text.html.ObjectView;
+import java.time.LocalDateTime;
+import java.util.UUID;
 
 @ApplicationScoped
 public class CertificadoService {
@@ -32,7 +36,16 @@ public class CertificadoService {
     private final ProgressoRepository progressoRepository;
     private final CursoRepository cursoRepository;
 
-    public CertificadoService(CertificadoRepository certificadoRepository, JsonWebToken jsonWebToken, UsuarioRepository usuarioRepository, CertificadoMapper certificadoMapper, MatriculaRepository matriculaRepository, AulaRepository aulaRepository, ProgressoRepository progressoRepository, CursoRepository cursoRepository) {
+    public CertificadoService(
+            CertificadoRepository certificadoRepository,
+            JsonWebToken jsonWebToken,
+            UsuarioRepository usuarioRepository,
+            CertificadoMapper certificadoMapper,
+            MatriculaRepository matriculaRepository,
+            AulaRepository aulaRepository,
+            ProgressoRepository progressoRepository,
+            CursoRepository cursoRepository
+    ) {
         this.certificadoRepository = certificadoRepository;
         this.jsonWebToken = jsonWebToken;
         this.usuarioRepository = usuarioRepository;
@@ -45,53 +58,64 @@ public class CertificadoService {
 
     @Transactional
     public CertificadoResponseDTO obterCertificadoPorCurso(Long cursoId) {
-        String email = jsonWebToken.getSubject();
-        var usuario = usuarioRepository.findByEmail(email);
-        if (usuario == null) {
-            throw new UsuarioNaoEncontradoException("Usuário não encontrado");
+        return certificadoMapper.toResponse(obterOuEmitirCertificado(cursoId));
+    }
+
+    @Transactional
+    public byte[] gerarPdfPorCurso(Long cursoId) {
+        CertificadoResponseDTO certificado = certificadoMapper.toResponse(obterOuEmitirCertificado(cursoId));
+        return CertificadoPdfGenerator.generate(certificado);
+    }
+
+    public CertificadoResponseDTO validarPorCodigo(String codigoValidacao) {
+        Certificado certificado = certificadoRepository.buscarPorCodigoValidacao(codigoValidacao);
+        if (certificado == null) {
+            throw new CertificadoNaoEncontradoException("Certificado nao encontrado para o codigo informado.");
         }
 
+        return certificadoMapper.toResponse(certificado);
+    }
+
+    private Certificado obterOuEmitirCertificado(Long cursoId) {
+        Usuario usuario = buscarUsuarioAutenticado();
         Curso curso = cursoRepository.findById(cursoId);
-        if (curso == null){
-            throw new CursoNaoEncontradoException("Curso não encontrado");
+        if (curso == null) {
+            throw new CursoNaoEncontradoException("Curso nao encontrado.");
         }
 
         var matricula = matriculaRepository.buscarPorUsuarioECurso(usuario.id, cursoId);
         if (matricula == null || !matricula.ativa) {
-            throw new AlunoNaoMatriculadoException("Usuário não está matriculado ou a matrícula não está ativa");
+            throw new AlunoNaoMatriculadoException("Usuario nao esta matriculado ou a matricula nao esta ativa.");
         }
 
-        Long totalAulas = aulaRepository.count("curso.id", cursoId);
+        long totalAulas = aulaRepository.count("curso.id", cursoId);
+        long aulasConcluidas = progressoRepository.contarAulasConcluidasPorUsuarioECurso(usuario.id, cursoId);
 
-
-        Long aulasConcluidas = progressoRepository.contarAulasConcluidasPorUsuarioECurso(usuario.id, cursoId);
-        if (!totalAulas.equals(aulasConcluidas)) {
-            throw new CursoNaoConcluidoException("Usuário não concluiu todas as aulas do curso");
+        if (totalAulas == 0 || totalAulas != aulasConcluidas) {
+            throw new CursoNaoConcluidoException("Usuario nao concluiu todas as aulas do curso.");
         }
 
-        double percentualConclusao = 0.0;
-        if (totalAulas > 0) {
-            percentualConclusao = (aulasConcluidas.doubleValue() / totalAulas.doubleValue()) * 100.0;
-        }
-
-        if (percentualConclusao < 100.0) {
-            throw new CursoNaoConcluidoException("Usuário não concluiu todas as aulas do curso");
-        }
-
-        var certificadoExistente = certificadoRepository.buscarPorUsuarioECurso(usuario.id, cursoId);
+        Certificado certificadoExistente = certificadoRepository.buscarPorUsuarioECurso(usuario.id, cursoId);
         if (certificadoExistente != null) {
-            return certificadoMapper.toResponse(certificadoExistente);
+            return certificadoExistente;
         }
-
-        String codigoValidacao = java.util.UUID.randomUUID().toString();
 
         Certificado certificado = new Certificado();
         certificado.usuario = usuario;
         certificado.curso = curso;
-        certificado.dataEmissao = java.time.LocalDateTime.now();
-        certificado.codigoValidacao = codigoValidacao;
+        certificado.dataEmissao = LocalDateTime.now();
+        certificado.codigoValidacao = UUID.randomUUID().toString();
 
         certificadoRepository.persist(certificado);
-        return certificadoMapper.toResponse(certificado);
+        return certificado;
+    }
+
+    private Usuario buscarUsuarioAutenticado() {
+        String email = jsonWebToken.getSubject();
+        Usuario usuario = usuarioRepository.findByEmail(email);
+        if (usuario == null) {
+            throw new UsuarioNaoEncontradoException("Usuario nao encontrado.");
+        }
+        return usuario;
     }
 }

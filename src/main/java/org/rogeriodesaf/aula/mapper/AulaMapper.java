@@ -4,6 +4,7 @@ import jakarta.enterprise.context.ApplicationScoped;
 import org.rogeriodesaf.aula.dto.AulaRequestDTO;
 import org.rogeriodesaf.aula.dto.AulaResponseDTO;
 import org.rogeriodesaf.aula.entity.Aula;
+import org.rogeriodesaf.aula.util.VideoUrlNormalizer;
 
 @ApplicationScoped
 public class AulaMapper {
@@ -12,7 +13,7 @@ public class AulaMapper {
         Aula aula = new Aula();
         aula.titulo = aulaRequestDTO.titulo();
         aula.descricao = aulaRequestDTO.descricao();
-        aula.urlVideo = aulaRequestDTO.urlVideo();
+        aula.urlVideo = VideoUrlNormalizer.normalize(aulaRequestDTO.urlVideo());
         aula.duracaoMinutos = aulaRequestDTO.duracaoMinutos();
 
 

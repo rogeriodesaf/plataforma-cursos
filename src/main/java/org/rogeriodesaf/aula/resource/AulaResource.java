@@ -3,7 +3,14 @@ package org.rogeriodesaf.aula.resource;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 import jakarta.validation.Valid;
-import jakarta.ws.rs.*;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.PUT;
+import jakarta.ws.rs.PATCH;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import org.rogeriodesaf.aula.dto.AulaRequestDTO;
@@ -27,28 +34,29 @@ public class AulaResource {
 
     @POST
     @RolesAllowed("ADMIN")
-    public Response criar(@Valid AulaRequestDTO aulaRequestDTO){
+    public Response criar(@Valid AulaRequestDTO aulaRequestDTO) {
         AulaResponseDTO response = aulaService.criar(aulaRequestDTO);
 
-        URI uri = URI.create("/aulas/"+ response.id());
+        URI uri = URI.create("/aulas/" + response.id());
         return Response.created(uri)
                 .entity(response)
                 .build();
     }
 
     @GET
-    @Path("/curso/{id}")
+    @Path("/{id}")
     @RolesAllowed("ADMIN")
-    public Response listarTodasAulas(Long id){
-        List<AulaResponseDTO> response = aulaService.listarAulas(id);
-        return  Response.ok(response).build();
+    public Response buscarPorId(@PathParam("id") Long id) {
+        AulaResponseDTO response = aulaService.buscarPorId(id);
+        return Response.ok(response).build();
     }
 
     @GET
-    @Path("/teste-admin")
+    @Path("/curso/{cursoId}")
     @RolesAllowed("ADMIN")
-    public Response testeAdmin() {
-        return Response.ok("Acesso permitido para ADMIN").build();
+    public Response listarTodasAulas(@PathParam("cursoId") Long cursoId) {
+        List<AulaResponseDTO> response = aulaService.listarAulas(cursoId);
+        return Response.ok(response).build();
     }
 
     @GET
@@ -59,11 +67,35 @@ public class AulaResource {
         return Response.ok(response).build();
     }
 
+    @PUT
+    @Path("/{id}/atualizar")
+    @RolesAllowed("ADMIN")
+    public Response atualizar(@PathParam("id") Long id, @Valid AulaRequestDTO aulaRequestDTO) {
+        AulaResponseDTO response = aulaService.atualizar(id, aulaRequestDTO);
+        return Response.ok(response).build();
+    }
+
+    @PATCH
+    @Path("/{id}/desativar")
+    @RolesAllowed("ADMIN")
+    public Response desativar(@PathParam("id") Long id) {
+        aulaService.desativar(id);
+        return Response.noContent().build();
+    }
+
+    @PATCH
+    @Path("/{id}/ativar")
+    @RolesAllowed("ADMIN")
+    public Response ativar(@PathParam("id") Long id) {
+        AulaResponseDTO response = aulaService.ativar(id);
+        return Response.ok(response).build();
+    }
+
     @GET
-    @Path("/curso/{cursoId}")
+    @Path("/curso/{cursoId}/ativas")
     @RolesAllowed("USER")
     public Response listarAulasPorCurso(@PathParam("cursoId") Long cursoId) {
-        List<AulaResponseDTO> response = aulaService.listarAulas(cursoId);
+        List<AulaResponseDTO> response = aulaService.listarAulasAtivas(cursoId);
         return Response.ok(response).build();
     }
 }

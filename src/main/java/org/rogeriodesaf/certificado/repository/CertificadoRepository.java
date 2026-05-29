@@ -7,7 +7,11 @@ import org.rogeriodesaf.certificado.entity.Certificado;
 @ApplicationScoped
 public class CertificadoRepository implements PanacheRepository<Certificado> {
 
-    public Certificado buscarPorUsuarioECurso(Long usarioId, Long cursoId){
-        return find("usuario.id = ?1 and curso.id = ?2", usarioId, cursoId).firstResult();
+    public Certificado buscarPorUsuarioECurso(Long usuarioId, Long cursoId) {
+        return find("usuario.id = ?1 and curso.id = ?2", usuarioId, cursoId).firstResult();
+    }
+
+    public Certificado buscarPorCodigoValidacao(String codigoValidacao) {
+        return find("codigoValidacao", codigoValidacao).firstResult();
     }
 }

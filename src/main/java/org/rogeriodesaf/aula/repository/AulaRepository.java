@@ -13,11 +13,19 @@ public class AulaRepository implements PanacheRepository <Aula>{
         return list("curso.id", cursoId);
     }
 
+    public List<Aula> findByCursoAtivo(Long cursoId) {
+        return list("curso.id = ?1 and ativa = true", cursoId);
+    }
+
     public Long contarAulasPorCurso(Long cursoId){
         return count("curso.id", cursoId);
     }
 
     public List<Aula> listarProfessor(Long professorId){return list("professor.id = ?1 and ativa = true", professorId);
+    }
+
+    public Aula findByCursoAndTitulo(Long cursoId, String titulo) {
+        return find("curso.id = ?1 and titulo = ?2", cursoId, titulo).firstResult();
     }
 
     public Aula buscarAulaPorCursoEOrdem(Long cursoId, Integer ordem){

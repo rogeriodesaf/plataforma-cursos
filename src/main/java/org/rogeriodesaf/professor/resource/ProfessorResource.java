@@ -2,7 +2,14 @@ package org.rogeriodesaf.professor.resource;
 
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.validation.Valid;
-import jakarta.ws.rs.*;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.PATCH;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.PUT;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import org.rogeriodesaf.professor.dto.ProfessorRequestDTO;
@@ -25,7 +32,7 @@ public class ProfessorResource {
 
     @POST
     @RolesAllowed("ADMIN")
-    public Response criar(@Valid ProfessorRequestDTO professorRequestDTO){
+    public Response criar(@Valid ProfessorRequestDTO professorRequestDTO) {
         ProfessorResponseDTO response = professorService.criarProfessor(professorRequestDTO);
         URI uri = URI.create("/professores/" + response.id());
         return Response.created(uri)
@@ -34,17 +41,49 @@ public class ProfessorResource {
     }
 
     @GET
+    @RolesAllowed("ADMIN")
+    public Response listarProfessoresAdmin() {
+        List<ProfessorResponseDTO> response = professorService.listarTodosParaAdmin();
+        return Response.ok(response).build();
+    }
+
+    @GET
+    @Path("/ativos")
     @RolesAllowed({"ADMIN", "USER"})
-    public Response listarProfessores(){
+    public Response listarProfessoresAtivos() {
         List<ProfessorResponseDTO> response = professorService.listarProfessores();
         return Response.ok(response).build();
     }
 
     @GET
     @Path("/{id}")
-    @RolesAllowed({"ADMIN","USER"})
+    @RolesAllowed({"ADMIN", "USER"})
     public Response listarProfessorPorId(@PathParam("id") Long id) {
         ProfessorResponseDTO response = professorService.listarProfessorPorId(id);
+        return Response.ok(response).build();
+    }
+
+    @PUT
+    @Path("/{id}/atualizar")
+    @RolesAllowed("ADMIN")
+    public Response atualizar(@PathParam("id") Long id, @Valid ProfessorRequestDTO professorRequestDTO) {
+        ProfessorResponseDTO response = professorService.atualizarProfessor(id, professorRequestDTO);
+        return Response.ok(response).build();
+    }
+
+    @PATCH
+    @Path("/{id}/desativar")
+    @RolesAllowed("ADMIN")
+    public Response desativar(@PathParam("id") Long id) {
+        professorService.desativarProfessor(id);
+        return Response.noContent().build();
+    }
+
+    @PATCH
+    @Path("/{id}/ativar")
+    @RolesAllowed("ADMIN")
+    public Response ativar(@PathParam("id") Long id) {
+        ProfessorResponseDTO response = professorService.ativarProfessor(id);
         return Response.ok(response).build();
     }
 }

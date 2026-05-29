@@ -1,77 +1,65 @@
-# plataforma-cursos
+# Plataforma Cursos Backend
 
-This project uses Quarkus, the Supersonic Subatomic Java Framework.
+Backend Quarkus da plataforma de cursos online.
 
-If you want to learn more about Quarkus, please visit its website: <https://quarkus.io/>.
+## Requisitos
 
-## Running the application in dev mode
+- Java 17 ou superior
+- Maven 3.9+
+- Docker Desktop ou outro runtime compativel com Docker Compose
 
-You can run your application in dev mode that enables live coding using:
+## Banco de dados
 
-```shell script
-./mvnw quarkus:dev
+O projeto usa PostgreSQL em desenvolvimento:
+
+- host: `localhost`
+- porta: `5433`
+- database: `plataforma_cursos`
+- usuario: `postgres`
+- senha: `postgres`
+
+Na raiz do workspace:
+
+```sh
+docker compose up -d
 ```
 
-> **_NOTE:_**  Quarkus now ships with a Dev UI, which is available in dev mode only at <http://localhost:8080/q/dev/>.
+## Seed de desenvolvimento
 
-## Packaging and running the application
+Ao subir em `dev`, o backend cria dados iniciais automaticamente:
 
-The application can be packaged using:
+- admin: `admin@plataforma.com` / `admin123`
+- aluno: `aluno@plataforma.com` / `aluno123`
+- professores, cursos e aulas de exemplo
+- uma matricula ativa do aluno demo com progresso parcial
 
-```shell script
-./mvnw package
+## Subir em desenvolvimento
+
+No diretorio `plataforma-cursos`:
+
+```sh
+mvn quarkus:dev
 ```
 
-It produces the `quarkus-run.jar` file in the `target/quarkus-app/` directory.
-Be aware that it’s not an _über-jar_ as the dependencies are copied into the `target/quarkus-app/lib/` directory.
+API local: `http://localhost:8180`
 
-The application is now runnable using `java -jar target/quarkus-app/quarkus-run.jar`.
+## Rodar testes
 
-If you want to build an _über-jar_, execute the following command:
-
-```shell script
-./mvnw package -Dquarkus.package.jar.type=uber-jar
+```sh
+mvn test
 ```
 
-The application, packaged as an _über-jar_, is now runnable using `java -jar target/*-runner.jar`.
+Os testes usam H2 em memoria no perfil `test`, sem depender do PostgreSQL local.
 
-## Creating a native executable
+## Configuracao atual
 
-You can create a native executable using:
+- PostgreSQL em `dev`
+- H2 em memoria em `test`
+- Geracao de schema com `drop-and-create` em `dev` e `test`
+- Schema desabilitado em `prod`
+- JWT assinado com `privateKey.pem` e validado com `publicKey.pem`
 
-```shell script
-./mvnw package -Dnative
-```
+## Observacoes
 
-Or, if you don't have GraalVM installed, you can run the native executable build in a container using:
-
-```shell script
-./mvnw package -Dnative -Dquarkus.native.container-build=true
-```
-
-You can then execute your native executable with: `./target/plataforma-cursos-1.0.0-SNAPSHOT-runner`
-
-If you want to learn more about building native executables, please consult <https://quarkus.io/guides/maven-tooling>.
-
-## Related Guides
-
-- Hibernate ORM ([guide](https://quarkus.io/guides/hibernate-orm)): Object-relational mapping with JPA/Hibernate for relational database access
-- SmallRye OpenAPI ([guide](https://quarkus.io/guides/openapi-swaggerui)): Generate OpenAPI schemas and serve Swagger UI for REST API documentation
-- REST Jackson ([guide](https://quarkus.io/guides/rest#json-serialisation)): Jackson serialization support for Quarkus REST. This extension is not compatible with the quarkus-resteasy extension, or any of the extensions that depend on it
-
-## Provided Code
-
-### Hibernate ORM
-
-Create your first JPA entity
-
-[Related guide section...](https://quarkus.io/guides/hibernate-orm)
-
-
-
-
-### REST
-
-Easily start your REST Web Services
-
-[Related guide section...](https://quarkus.io/guides/getting-started-reactive#reactive-jax-rs-resources)
+- O frontend Angular esta em `../frontend-angular`.
+- O script `../start-dev.ps1` sobe banco, backend e frontend.
