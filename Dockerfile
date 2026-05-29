@@ -1,12 +1,12 @@
 FROM maven:3.9.11-eclipse-temurin-17 AS build
 WORKDIR /workspace
 
-COPY pom.xml mvnw mvnw.cmd ./
+COPY pom.xml ./
 COPY .mvn .mvn
 COPY src src
 COPY privateKey.pem publicKey.pem ./
 
-RUN chmod +x mvnw && ./mvnw package -DskipTests
+RUN mvn package -DskipTests
 
 FROM eclipse-temurin:17-jre
 WORKDIR /app
